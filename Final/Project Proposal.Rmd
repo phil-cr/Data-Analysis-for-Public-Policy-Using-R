@@ -1,0 +1,146 @@
+---
+title: "Project Proposal"
+author: "Lena Harris"
+date: "2024-03-07"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(dplyr)
+```
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+state_2013 <- read.csv("Data/Geography/Geographical Report by Vendor Location (FY2013).csv", skip = 1, 
+                          header = TRUE, stringsAsFactors = FALSE, colClass ="factor")
+state_2014 <- read.csv("Data/Geography/Geographical Report by Vendor Location (FY2014).csv", skip = 1,
+                          header = TRUE, stringsAsFactors = FALSE, colClass ="factor")
+state_2015 <- read.csv("Data/Geography/Geographical Report by Vendor Location (FY2015).csv", skip = 1,
+                          header = TRUE, stringsAsFactors = FALSE, colClass ="factor")
+state_2016 <- read.csv("Data/Geography/Geographical Report by Vendor Location (FY2016).csv", skip = 1,
+                          header = TRUE, stringsAsFactors = FALSE, colClass ="factor")
+state_2017 <- read.csv("Data/Geography/Geographical Report by Vendor Location (FY2017).csv", skip = 1,
+                          header = TRUE, stringsAsFactors = FALSE, colClass ="factor")
+state_2018 <- read.csv("Data/Geography/Geographical Report by Vendor Location (FY2018).csv", skip = 1,
+                          header = TRUE, stringsAsFactors = FALSE, colClass ="factor")
+state_2019 <- read.csv("Data/Geography/Geographical Report by Vendor Location (FY2019).csv", skip = 1,
+                          header = TRUE, stringsAsFactors = FALSE, colClass ="factor")
+state_2020 <- read.csv("Data/Geography/Geographical Report by Vendor Location (FY2020).csv", skip = 1,
+                          header = TRUE, stringsAsFactors = FALSE, colClass ="factor")
+state_2021 <- read.csv("Data/Geography/Geographical Report by Vendor Location (FY2021).csv", skip = 1,
+                          header = TRUE, stringsAsFactors = FALSE, colClass ="factor")
+state_2022 <- read.csv("Data/Geography/Geographical Report by Vendor Location (FY2022).csv", skip = 1,
+                          header = TRUE, stringsAsFactors = FALSE, colClass ="factor")
+state_2023 <- read.csv("Data/Geography/Geographical Report by Vendor Location (FY2023).csv", skip = 1,
+                          header = TRUE, stringsAsFactors = FALSE, colClass ="factor")
+state_2024 <- read.csv("Data/Geography/Geographical Report by Vendor Location (FY2024).csv", skip = 1,
+                          header = TRUE, stringsAsFactors = FALSE, colClass ="factor")
+```
+
+```{r}
+state_2013$year <- 2013
+state_2014$year <- 2014
+state_2015$year <- 2015
+state_2016$year <- 2016
+state_2017$year <- 2017
+state_2018$year <- 2018
+state_2019$year <- 2019
+state_2020$year <- 2020
+state_2021$year <- 2021
+state_2022$year <- 2022
+state_2023$year <- 2023
+state_2024$year <- 2024
+```
+
+```{r}
+summary(state_2013) 
+```
+```{r}
+contracts <- list(state_2013, state_2014, state_2015, state_2016, state_2017, 
+                  state_2018, state_2019, state_2020, state_2021, state_2022,
+                  state_2023, state_2024)
+```
+
+```{r}
+state_2013 <- state_2013 %>% 
+  mutate(across(ends_with(".Dollars"), ~gsub("\\$", "", .)))
+state_2014 <- state_2014 %>% 
+  mutate(across(ends_with(".Dollars"), ~gsub("\\$", "", .)))
+state_2015 <- state_2015 %>% 
+  mutate(across(ends_with(".Dollars"), ~gsub("\\$", "", .)))
+state_2016 <- state_2016 %>% 
+  mutate(across(ends_with(".Dollars"), ~gsub("\\$", "", .)))
+state_2017 <- state_2017 %>% 
+  mutate(across(ends_with(".Dollars"), ~gsub("\\$", "", .)))
+state_2018 <- state_2018 %>% 
+  mutate(across(ends_with(".Dollars"), ~gsub("\\$", "", .)))
+state_2019 <- state_2019 %>% 
+  mutate(across(ends_with(".Dollars"), ~gsub("\\$", "", .)))
+state_2020 <- state_2020 %>% 
+  mutate(across(ends_with(".Dollars"), ~gsub("\\$", "", .)))
+state_2021 <- state_2021 %>% 
+  mutate(across(ends_with(".Dollars"), ~gsub("\\$", "", .)))
+state_2022 <- state_2022 %>% 
+  mutate(across(ends_with(".Dollars"), ~gsub("\\$", "", .)))
+state_2023 <- state_2023 %>% 
+  mutate(across(ends_with(".Dollars"), ~gsub("\\$", "", .)))
+state_2024 <- state_2024 %>% 
+  mutate(across(ends_with(".Dollars"), ~gsub("\\$", "", .)))
+```
+
+```{r}
+state_2013 <- state_2013 %>% 
+  mutate(across(ends_with("Dollars"), ~gsub("\\,", "", .))) %>% 
+  mutate(across(ends_with("Actions"), ~gsub("\\,", "", .)))
+state_2014 <- state_2014 %>% 
+  mutate(across(ends_with("Dollars"), ~gsub("\\,", "", .))) %>% 
+  mutate(across(ends_with("Actions"), ~gsub("\\,", "", .)))
+state_2015 <- state_2015 %>% 
+  mutate(across(ends_with("Dollars"), ~gsub("\\,", "", .))) %>% 
+  mutate(across(ends_with("Actions"), ~gsub("\\,", "", .)))
+state_2016 <- state_2016 %>% 
+  mutate(across(ends_with("Dollars"), ~gsub("\\,", "", .))) %>% 
+  mutate(across(ends_with("Actions"), ~gsub("\\,", "", .)))
+state_2017 <- state_2017 %>% 
+  mutate(across(ends_with("Dollars"), ~gsub("\\,", "", .))) %>% 
+  mutate(across(ends_with("Actions"), ~gsub("\\,", "", .)))
+state_2018 <- state_2018 %>% 
+  mutate(across(ends_with("Dollars"), ~gsub("\\,", "", .))) %>% 
+  mutate(across(ends_with("Actions"), ~gsub("\\,", "", .)))
+state_2019 <- state_2019 %>% 
+  mutate(across(ends_with("Dollars"), ~gsub("\\,", "", .))) %>% 
+  mutate(across(ends_with("Actions"), ~gsub("\\,", "", .)))
+state_2020 <- state_2020 %>% 
+  mutate(across(ends_with("Dollars"), ~gsub("\\,", "", .))) %>% 
+  mutate(across(ends_with("Actions"), ~gsub("\\,", "", .)))
+state_2021 <- state_2021 %>% 
+  mutate(across(ends_with("Dollars"), ~gsub("\\,", "", .))) %>% 
+  mutate(across(ends_with("Actions"), ~gsub("\\,", "", .)))
+state_2022 <- state_2022 %>% 
+  mutate(across(ends_with("Dollars"), ~gsub("\\,", "", .))) %>% 
+  mutate(across(ends_with("Actions"), ~gsub("\\,", "", .)))
+state_2023 <- state_2023 %>% 
+  mutate(across(ends_with("Dollars"), ~gsub("\\,", "", .))) %>% 
+  mutate(across(ends_with("Actions"), ~gsub("\\,", "", .)))
+state_2024 <- state_2024 %>% 
+  mutate(across(ends_with("Dollars"), ~gsub("\\,", "", .))) %>% 
+  mutate(across(ends_with("Actions"), ~gsub("\\,", "", .)))
+```
+
+```{r}
+temp_2013 <- state_2013 %>% ("Vendor.State", "Total.Actions", "Total.Dollars", "Large.Business.Dollars", "Large.Business.Actions", "Small.Business.Actions", "Small.Business.Dollars", "Tribally.Owned.Firm.Actions", "Tribally.Owned.Firm.Dollars", "Black.American.Owned.Actions", "Black.American.Owned.Dollars", "Total.Minority.Owned.Business.Actions", "Total.Minority.Owned.Business.Dollars", "Asian.Pacific.American.Owned.Actions", "Asian.Pacific.American.Owned.Dollars")
+  
+```
+
+```{r}
+contracts <- class(contract)
+
+contracts
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

@@ -1,0 +1,3 @@
+"0","temp_2013 <- state_2013 %>% (""Vendor.State"", ""Total.Actions"", ""Total.Dollars"", ""Large.Business.Dollars"", ""Large.Business.Actions"", ""Small.Business.Actions"", ""Small.Business.Dollars"", ""Tribally.Owned.Firm.Actions"", ""Tribally.Owned.Firm.Dollars"", ""Black.American.Owned.Actions"", ""Black.American.Owned.Dollars"", ""Total.Minority.Owned.Business.Actions"", ""Total.Minority.Owned.Business.Dollars"", ""Asian.Pacific.American.Owned.Actions"", ""Asian.Pacific.American.Owned.Dollars"")"
+"2","Error: unexpected ',' in ""temp_2013 <- state_2013 %>% (""Vendor.State"",""
+"
