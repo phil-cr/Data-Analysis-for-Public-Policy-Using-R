@@ -1,0 +1,253 @@
+---
+title: 'U6614: Assignment 2'
+author: 'Philip Crane (plc2137)'
+date: '`r Sys.Date()`'
+output:
+  pdf_document:
+    toc: no
+    toc_depth: '3'
+    number_sections: yes
+  html_document:
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+    number_sections: yes
+    highlight: tango
+    theme: default
+    fig_caption: yes
+    df_print: tibble
+urlcolor: blue
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+```{r}
+library(tidyverse)
+```
+
+\medspace
+
+# Load and inspect CPS data: 
+
+### 1a) Inspect the data frame and data types for each column {-}
+- remember to remove NAs
+- make sure to inspect the age, sex, race, college columns
+
+```{r}
+cps <- read.csv("cps_june_22-23.csv")
+  cps <- na.omit(cps)
+```
+
+```{r}
+summary(cps$age)
+summary(cps$sex)
+summary(cps$race)
+summary(cps$college)
+```
+
+### 1b) Use the mutate function to create new column for sex {-}
+- sex.fac = as.factor(sex),
+- check if it worked by calling the str() function
+
+```{r results = 'hide'}
+mutate(cps, sex.fac = as.factor(sex))
+```
+```{r}
+str(mutate(cps, sex.fac = as.factor(sex)))
+```
+
+### 1c) Include sex.fac in a new data frame called cps.temp1 {-}
+- also create factors for race and college education,
+- use a pipe to exclude the columns for serial, ind
+- after creating cps.temp1, print the first 5 observations
+
+```{r}
+cps.temp1 <- cps %>% 
+  mutate(sex.fac = as.factor(sex),
+         race.fac = as.factor(race),
+         college.fac = as.factor(college)) %>% 
+  select(-serial, -ind)
+  
+head(cps.temp1, n = 5)
+```
+
+### 1d) Inspect race.fac, sex.fac, and college.fac using the levels() function {-}
+- what package is the levels() function located in?
+
+```{r}
+levels(cps.temp1$sex.fac)
+levels(cps.temp1$race.fac)
+levels(cps.temp1$college.fac)
+```
+The levels function is located in the base R package
+
+### 1e) Use filter() to only include rows only for June 2022 {-}
+- store as a new object cps_2022,
+- print the first 5 observations,
+- confirm your data only includes observations for 2022
+
+```{r}
+cps_2022 <- cps.temp1 %>% 
+  filter(year == 2022)
+
+head(cps_2022, n = 5)
+```
+
+### 1f) Remove the cps.temp1 object from memory using the rm() function {-}
+
+```{r}
+rm(cps.temp1)
+```
+
+\medspace
+
+# Describe the cps_2022 data frame
+
+### 2a) What is the unit of observation? {-}
+
+The unit of observation is the individual survey respondent.
+
+### 2b) How many individuals are observed? from how many households? {-}
+
+```{r}
+summarise(cps_2022, n_distinct(personid))
+summarise(cps_2022, n_distinct(hhid))
+```
+
+There are `r n_distinct(cps_2022$personid)` individuals and `r n_distinct(cps_2022$hhid)` households
+
+### 2c) What is the average age of individuals in the sample? Youngest and oldest person? {-}
+
+```{r}
+sumstats <- cps_2022 %>% 
+  summarise(avg_age = mean(age),
+            min_age = min(age),
+            max_age = max(age))
+```
+
+The average age is `r round(mean(cps_2022$age), 2)`, the oldest person is `r max(cps_2022$age)` and the youngest is `r min(cps_2022$age)`.
+
+\medspace
+
+# Earnings per week for different groups in June 2022
+
+### 3a) Find the observation for the top weekly earnings using the summarise() function {-}
+- assign this to a new object called max_earnings
+
+```{r}
+max_earnings <- cps_2022 %>% 
+  summarise(max_earning = max(earnweek))
+```
+
+### 3b) Find max weekly earnings using the arrange function instead of summarise {-}
+
+```{r}
+cps_2022 %>% 
+    arrange(desc(earnweek)) %>% 
+    select(earnweek) %>% 
+    head(n=1)
+```
+
+### 3c) Use the filter function to subset for the observation with max weekly earnings {-}
+- don't hardcode the max earnings to filter on, refer to the max_earnings object from a),
+- store in new data frame cps_max_earn,
+- confirm it worked
+
+```{r}
+cps_max_earn <- cps_2022 %>% 
+  filter(earnweek == max_earnings[1,])
+  
+summary(cps_max_earn$earnweek)
+```
+
+### 3d) What is the age, sex, and race of the top weekly earner in the sample? {-}
+
+```{r}
+cps_max_earn[1,4:6]
+```
+
+### 3e) List the age, sex, and race of the top 10 weekly earners in the sample {-}
+
+```{r}
+cps_2022 %>% 
+  arrange(desc(earnweek)) %>% 
+  select(age, sex, race) %>% 
+  head(n=10)
+```
+
+### 3f) How many individuals earned more than $2000 in weekly earnings? {-}
+
+```{r}
+cps_2022 %>% 
+  filter(earnweek > 2000) %>% 
+  nrow()
+```
+
+\medspace
+
+# Wage gaps between males and females:
+
+### 4a) Use the filter function to subset observations for males {-}
+- assign to new data frame, cps_2022_male,
+- sort in descending order of weekly earnings
+- check if it worked
+
+```{r}
+cps_2022_male <- cps_2022 %>% 
+  filter(sex == 'Male') %>% 
+  arrange(desc(earnweek))
+
+str(cps_2022_male)
+```
+
+### 4b) Repeat part a for females and create a new data frame, cps_2022_female {-}
+
+```{r}
+cps_2022_female <- cps_2022 %>% 
+  filter(sex == 'Female') %>% 
+  arrange(desc(earnweek))
+
+str(cps_2022_female)
+```
+
+### 4c) Use summarise to find mean, min & max for males and females, separately {-}
+- name each statistic appropriately (i.e. name each column in the 1-row table of stats)
+- what is the gender gap in mean weekly earnings?
+
+```{r}
+summarise(cps_2022_male, avg_earn = mean(earnweek),
+                         min_earn = min(earnweek),
+                         max_earn = max(earnweek))
+```
+```{r}
+summarise(cps_2022_female, avg_earn = mean(earnweek),
+                           min_earn = min(earnweek),
+                           max_earn = max(earnweek))
+```
+
+The average gender gap in mean weekly earnings is `r round(mean(cps_2022_male$earnweek) - mean(cps_2022_female$earnweek), 2)`
+
+### 4d) What is the wage gap in weekly earnings between white males and Black females? {-}
+
+```{r}
+cps_2022_male_white <- cps_2022_male %>%
+  filter(race == 'White')
+
+cps_2022_female_black <- cps_2022_female %>%
+  filter(race == 'Black')
+```
+
+The average wage gap between white males and black females is `r round(mean(cps_2022_male_white$earnweek) - mean(cps_2022_female_black$earnweek), 2)`
+
+### 4e) What is the wage gap between college educated white males and college educated Black females? {-}
+
+```{r}
+cps_2022_male_white_edu <- cps_2022_male_white %>% 
+  filter(college == 'College degree')
+
+cps_2022_female_black_edu <- cps_2022_female_black %>% 
+  filter(college == 'College degree')
+```
+
+The average wage gap between college educated white males and college educated black females is `r round(mean(cps_2022_male_white_edu$earnweek) - mean(cps_2022_female_black_edu$earnweek), 2)`

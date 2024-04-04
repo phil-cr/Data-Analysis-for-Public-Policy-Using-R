@@ -1,0 +1,28 @@
+{
+    "id": "63860F3A",
+    "path": null,
+    "project_path": null,
+    "type": "object_explorer",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1710863940098.0,
+    "source_on_save": false,
+    "relative_order": 3,
+    "properties": {
+        "id": "bdb6496ec71e40b38feabf187aa99041",
+        "name": "panel_total_x_feonly",
+        "title": "panel_total_x_feonly",
+        "language": "R",
+        "source_window_id": "",
+        "Source": "Source"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 2308706284328853562,
+    "encoding": "",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1710863940098,
+    "read_only": false,
+    "read_only_alternatives": []
+}

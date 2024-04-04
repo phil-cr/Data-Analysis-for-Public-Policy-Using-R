@@ -1,0 +1,7 @@
+"0","cps.temp1 <- cps %>% "
+"0","  mutate(sex.fac = as.factor(sex),"
+"0","         race.fac = as.factor(race),"
+"0","         college.fac = as.factor(college)) %>% "
+"0","  select(-serial, -ind)"
+"0","  "
+"0","head(cps.temp1, n = 5)"

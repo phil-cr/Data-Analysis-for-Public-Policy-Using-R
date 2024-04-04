@@ -1,0 +1,8 @@
+"0","arrests.clean <- dummy_cols(arrests.clean, select_columns = ""race_eth"")"
+"0",""
+"0","arrests.clean %>% "
+"0","  summarise(mean_black = mean(`race_eth_Non-Hispanic Black`, na.rm = TRUE),"
+"0","            mean_hispanic = mean(`race_eth_Hispanic`, na.rm = TRUE),"
+"0","            mean_white = mean(`race_eth_Non-Hispanic White`, na.rm = TRUE),"
+"0","            mean_asianpi = mean(`race_eth_Asian/Pacific Islander`, na.rm = TRUE),"
+"0","            mean_other = mean(`race_eth_Other`, na.rm = TRUE))"

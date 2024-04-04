@@ -1,0 +1,5 @@
+"0","ggplot(ym_inc, "
+"0","       aes(x = date, y = si_1000, color = inc_above_median)) + "
+"0","  geom_line() +"
+"0","  labs(title = ""Shutoffs per Capita Over Time Above & Below Citywide Median Housheold Income"", "
+"0","       x = ""Date"", y = ""Shutoffs per Capita"", color = ""Median Income"")"

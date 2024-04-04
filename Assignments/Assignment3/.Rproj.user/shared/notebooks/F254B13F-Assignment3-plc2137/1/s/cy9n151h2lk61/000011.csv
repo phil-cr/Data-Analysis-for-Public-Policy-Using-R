@@ -1,0 +1,4 @@
+"0","#save(list=""arrests.clean"", "
+"0"," #    file = ""C:\\Users\\philc\\OneDrive\\Desktop\\Spring"
+"0","  #          2024\\R\\Lectures\\Lecture4\\arrests.clean.RData"")"
+"0","##Commenting this out as it caused issues when knitting##"

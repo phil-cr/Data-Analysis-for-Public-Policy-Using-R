@@ -1,0 +1,5 @@
+"0","cps_2022_male_white_edu <- cps_2022_male_white %>% "
+"0","  filter(college == 'College degree')"
+"0",""
+"0","cps_2022_female_black_edu <- cps_2022_female_black %>% "
+"0","  filter(college == 'College degree')"

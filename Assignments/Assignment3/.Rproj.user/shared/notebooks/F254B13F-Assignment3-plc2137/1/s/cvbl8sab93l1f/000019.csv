@@ -1,0 +1,5 @@
+"0","prop.table(table(arrests.clean$race_eth, useNA = ""always"")) %>% "
+"0","      round(2) %>% "
+"0","      as.data.frame() %>% "
+"0","      arrange(desc(Freq)) %>% "
+"0","      rename(race_eth = Var1)"

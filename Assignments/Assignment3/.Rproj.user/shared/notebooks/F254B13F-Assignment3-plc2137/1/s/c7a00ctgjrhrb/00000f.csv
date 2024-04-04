@@ -1,0 +1,2 @@
+"0","arrests_bds <- read_csv(""microdata_BDS_inclass.csv"", na = """")"
+"0","arrests_las <- read_csv(""microdata_LAS_inclass.csv"", na = """")"

@@ -1,0 +1,3 @@
+"0","arrests_bds <- arrests_bds %>% "
+"0","    mutate(race = as.factor(race), "
+"0","           ethnicity = as.factor(ethnicity))"

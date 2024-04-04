@@ -1,0 +1,5 @@
+"0","st_complaint <- read.csv(""nypd_criminalcomplaints_2016.csv"", "
+"0","                         stringsAsFactors = TRUE)"
+"0",""
+"0","stations <- "
+"0","    inner_join(stations, st_complaint, by = c(""st_id"" = ""st_id""))"

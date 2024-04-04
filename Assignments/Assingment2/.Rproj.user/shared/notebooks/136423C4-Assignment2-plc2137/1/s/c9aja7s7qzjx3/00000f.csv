@@ -1,0 +1,2 @@
+"0","cps <- read.csv(""cps_june_22-23.csv"")"
+"0","  cps <- na.omit(cps)"

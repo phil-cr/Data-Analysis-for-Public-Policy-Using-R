@@ -1,0 +1,326 @@
+---
+title: 'U6614: Assignment 3'
+author: 'Philip Crane (plc2137)'
+date: '`r Sys.Date()`'
+output:
+  pdf_document:
+    toc: no
+    toc_depth: '3'
+    number_sections: yes
+  html_document:
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+    number_sections: yes
+    highlight: tango
+    theme: default
+    fig_caption: yes
+    df_print: tibble
+urlcolor: blue
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+\medspace
+
+# Load libraries.
+
+```{r}
+library(tidyverse)
+library(fastDummies)
+```
+
+\medspace
+
+# Load and inspect the two public defender client datasets (BDS & LAS). 
+
+```{r}
+arrests_bds <- read_csv("microdata_BDS_inclass.csv", na = "")
+arrests_las <- read_csv("microdata_LAS_inclass.csv", na = "")
+```
+
+- Get a good look at the data, but don't print long, clunky output here; one approach is to call the str() function for each dataset but to suppress the included list of attributes by including the option give.attr = FALSE.
+
+```{r}
+str(arrests_bds, give.attr = FALSE) 
+str(arrests_las, give.attr = FALSE)
+```
+
+### 2a) Give a brief overview of the data. The aim is not be exhaustive, but to paint a picture of they key features of the data with respect to the policy questions you'll be exploring. {-}
+
+The data, comprised of public defender records from the Bronx Defenders (BDS) and Legal Aid Society (LAS), contains information on individuals arrested for subway fare evasion. The variables most relevant to us codify race, ethnicity, age, location, and dismissal status.
+
+### 2b) For each dataset, what is the unit of observation and population represented by this "sample"? Do you think this sample does a good job representing the population of interest? Why or why not? {-}
+
+The unit of observation in both datasets is the individual arrestee. The sample does not do a good job representing the population of interest, as it is limited to individuals who have been arrested for subway fare evasion and have sought public defender services, leaving many questions about the individuals who were not arrested, evaded fare on the bus, or hired a private attorney. This sample is likely to be biased, as it does not include individuals who were not arrested, as well as those who were arrested but did not seek public defender services. The data also has trouble definitively identifying the arrestee's race/ethnicity in a consistent way.
+
+### 2c) Inspect and describe the coding of race and ethnicity in each dataset. {-}
+
+```{r}
+summary(arrests_bds$race)
+summary(arrests_bds$ethnicity)
+
+
+summary(arrests_las$las_race_key)
+summary(arrests_las$hispanic_flag)
+```
+In the BDS dataset, both "race" and "ethnicity" are character variables. While
+"race" codifies conventional non-hispanic race categories, "ethnicity" only refers
+to a "Hispanic"/"Non-Hispanic" dichotomy.
+
+"Race" indicates the same in the LAS data, while "hispanic_flag" serves as the 
+"Hispanic"/"Non-Hispanic" identifier.
+
+### 2d) From the outset, are there any data limitations you think are important to note? {-}
+
+We don't know if these race/ethnicity identifiers are self-reported or the work of NYPD/public defender offices. This way of codifying what are often realistically blurry lines can distort the narrative. It is also important to consider how the "NA" indicator is used, whether in instances of no response from the arrestee or ambiguity by the police, both have implications on how reflective the data is to reality.
+
+\medspace
+
+# Clean BDS race and ethnicity data (insert code chunks that only include code you used to recode and very briefly validate your recoding).
+
+```{r}
+arrests_bds <- arrests_bds %>% 
+    mutate(race = as.factor(race), 
+           ethnicity = as.factor(ethnicity))
+```
+
+### 3a) BDS: race data (generate column `race_clean`). {-}
+
+```{r}
+arrests_bds <- arrests_bds %>% 
+    mutate(race = as.factor(race))
+
+arrests_bds.clean <- arrests_bds %>% 
+      mutate(race_clean = recode(race, "0" = "NA", 
+                                       "Unknown" = "NA", 
+                                       "Am Indian" = "Other" ) )%>% 
+      mutate(race_clean = factor(race_clean, 
+                                 levels = c("Black", "White", "Asian/Pacific Islander", "Other")))
+```
+
+### 3b) BDS: ethnicity data (generate column `ethnicity_clean`). {-}
+
+```{r}
+arrests_bds <- arrests_bds %>% 
+    mutate(ethnicity = as.factor(ethnicity))
+
+arrests_bds.clean <- arrests_bds.clean %>% 
+      mutate(ethnicity_clean = recode(ethnicity,
+                               '0' = 'NA',
+                               'Other' = 'Non-Hispanic')) %>% 
+      mutate(ethnicity_clean = factor(ethnicity_clean,
+                               levels = c('Hispanic', 'Non-Hispanic')))
+```
+
+### 3c) Generate a single race/ethnicity factor variable `race_eth` with mutually exclusive categories. {-}
+
+```{r}
+arrests_bds.clean <- arrests_bds.clean %>% 
+      mutate(race_clean_char = as.character(race_clean),
+             ethnicity_clean_char   = as.character(ethnicity_clean)) %>%
+      mutate(race_eth = ifelse(ethnicity_clean_char %in% "Hispanic",
+                               ethnicity_clean_char, 
+                               race_clean_char) ) %>%  
+      mutate(race_eth = as.factor(recode(race_eth, 
+                                         "White" = "Non-Hispanic White",
+                                         "Black" = "Non-Hispanic Black"))) %>%
+      select(-race_clean_char, -ethnicity_clean_char)
+```
+
+
+\medspace
+
+# Clean LAS race and ethnicity data
+
+### 4a) Follow your own steps to end up at a comparably coded `race_eth` variable for the LAS data. {-}
+
+```{r}
+arrests_las <- arrests_las %>% 
+    mutate(race = as.factor(las_race_key), 
+           ethnicity = as.factor(hispanic_flag) )
+
+arrests_las.clean <- arrests_las %>% 
+  mutate(race_clean = recode(las_race_key,
+                             "Asian or Pacific Islander" = "Asian/Pacific Islander",
+                             "Unknown" = "NA",
+                             "Latino" = "Hispanic",
+                             "White" = "Non-Hispanic White",
+                             "Black" = "Non-Hispanic Black")) %>% 
+  mutate(race_eth = ifelse(hispanic_flag %in% "Y", "Hispanic", race_clean)) %>% 
+  mutate(race_eth = factor(race_eth, levels = c("Non-Hispanic Black",
+                                                "Hispanic",
+                                                "Non-Hispanic White",
+                                                "Asian/Pacific Islander",
+                                                "Other")))
+```
+
+*NOTE: you may be able to do everything in a single pipe, depending on your approach (but you certainly don't have to).*
+
+
+\medspace
+
+# Combining (appending) the BDS and LAS microdata 
+
+### 5a) Create a column (`pd`) to identify public defender data source. {-}
+
+```{r}
+arrests_bds.clean <- arrests_bds.clean %>% mutate(pd = "bds")
+arrests_las.clean <- arrests_las.clean %>% mutate(pd = "las")
+```
+
+### 5b) Append `arrests_bds.clean` and `arrests_las.clean` using `bind_rows()`. Store as new data frame `arrests.clean` and inspect for consistency/accuracy. {-}
+
+```{r}
+arrests.clean <- bind_rows(arrests_bds.clean, arrests_las.clean) %>%
+    mutate(pd = as.factor(pd),
+           st_id = as.factor(st_id),
+           loc2 = as.factor(loc2)) %>% 
+    select(pd, race_eth, age, male, st_id, loc2, dismissal)
+summary(arrests.clean)
+```
+
+### 5c) What is the total number of subway fare evasion arrest records? {-}
+
+The total number of subway fare evasion arrest records is `r nrow(arrests.clean)`.
+
+### 5d) Save `arrests.clean` as an .RData file, in a folder for next class called Lecture4. {-}
+
+```{r}
+#save(list="arrests.clean", 
+ #    file = "C:\\Users\\philc\\OneDrive\\Desktop\\Spring
+  #          2024\\R\\Lectures\\Lecture4\\arrests.clean.RData")
+##Commenting this out as it caused issues when knitting##
+```
+
+\medspace
+
+
+# Descriptive statistics by race/ethnicity
+
+### 6a) Print the number of arrests for each race/ethnicity category (a frequency table). {-}
+
+```{r}
+table(arrests.clean$race_eth, useNA = "always")
+```
+
+### 6b) Print the proportion of total arrests for each race/ethnicity category. How does excluding NAs change the results? {-}
+
+```{r}
+prop.table(table(arrests.clean$race_eth, useNA = "always")) %>% 
+      round(2) %>% 
+      as.data.frame() %>% 
+      arrange(desc(Freq)) %>% 
+      rename(race_eth = Var1)
+
+prop.table(table(arrests.clean$race_eth)) %>% 
+      round(2) %>% 
+      as.data.frame() %>% 
+      arrange(desc(Freq)) %>% 
+      rename(race_eth = Var1)
+```
+Excluding NAs adds additional weight to three categories: "Hispanic", "Non-Hispanic Black", and "Non-Hispanic White". "Non-Hispanic Black" is impacted the most, increasing from 0.61 to 0.68 when NAs are excluded.
+
+### 6c) Show the average age, share male, and dimissal rate for each race/ethnicity category. Include the total sample size (all observations), and if you can, include the sample size for the dismissal variabe as well (number of non-NA observations). {-}
+
+```{r}
+race_eth_stats <- arrests.clean %>% 
+  group_by(race_eth) %>% 
+  summarise(mean_age = mean(age, na.rm = TRUE),
+            share_male = mean(male, na.rm = TRUE),
+            dismissal_rate = mean(dismissal, na.rm = TRUE),
+            total_n = n(),
+            dismissal_n = n_distinct(dismissal, na.rm = TRUE))
+
+print(race_eth_stats)
+```
+
+### 6d) Describe any noteworthy findings from the table you presented in 6c. {-}
+
+While the average age of arrestees is relatively uniform across all race_eth catagories (28.3 to 29.7), the arrest rate of Non-Hispanic Black individuals is notably higher than the other categories at 2562, while the second highest, Hispanic, is 704.
+
+\medspace
+
+# Subway-station level analysis
+
+### 7a) Create dummy variables for each race/ethnicity category and show summary statistics only for these dummy variables. {-}
+
+```{r}
+arrests.clean <- dummy_cols(arrests.clean, select_columns = "race_eth")
+
+arrests.clean %>% 
+  summarise(mean_black = mean(`race_eth_Non-Hispanic Black`, na.rm = TRUE),
+            mean_hispanic = mean(`race_eth_Hispanic`, na.rm = TRUE),
+            mean_white = mean(`race_eth_Non-Hispanic White`, na.rm = TRUE),
+            mean_asianpi = mean(`race_eth_Asian/Pacific Islander`, na.rm = TRUE),
+            mean_other = mean(`race_eth_Other`, na.rm = TRUE))
+```
+
+### 7b) Aggregate to station-level observations and show a table with the top 10 stations by arrest totals, including the following information for each station: {-}
+ 
+- station name (loc2)
+- station id
+- total number of arrests at each station
+- total number of arrests for each race_eth category at each station
+- sort in descending order by total number of arrests
+- remember to only show the top 10 stations
+- use kable() in the knitr package for better formatting
+
+```{r}
+arrests_stations <- arrests.clean %>%  
+    group_by(loc2) %>%
+    summarise(st_id = first(st_id), 
+              n = n(),
+              n_black = sum(`race_eth_Non-Hispanic Black`, na.rm = TRUE), 
+              n_hisp  = sum(race_eth_Hispanic, na.rm = TRUE),
+              n_api   = sum(`race_eth_Asian/Pacific Islander`, na.rm = TRUE),
+              n_nhw   = sum(`race_eth_Non-Hispanic White`, na.rm = TRUE), 
+              n_oth   = sum(race_eth_Other, na.rm = TRUE) )   %>%
+    arrange(desc(n))
+  knitr::kable(head(arrests_stations, n = 10))
+```
+
+###  7c) Aggregate to station-level observations (group by loc2), and show a table of stations with at least 50 arrests along with the following information: {-}
+
+- station name (loc2)
+- station arrest total
+- combined total number of Black and Hispanic arrests
+- total number of arrests with race/ethnicity coded as NA
+- share of arrests that are Black and Hispanic (excluding race_eth = NA from denominator)
+- sorted in ascending order by Black and Hispanic arrest share
+- remember to only show stations with at least 50 total arrests
+- use kable() in the knitr package for better formatting
+
+```{r}
+arrests_stations_top <- arrests.clean %>% 
+  group_by(loc2) %>% 
+  summarise(st_id = first(st_id), 
+            n = n(),
+            n_black = sum(`race_eth_Non-Hispanic Black`, na.rm = TRUE), 
+            n_hisp  = sum(race_eth_Hispanic, na.rm = TRUE),
+            n_api   = sum(`race_eth_Asian/Pacific Islander`, na.rm = TRUE),
+            n_nhw   = sum(`race_eth_Non-Hispanic White`, na.rm = TRUE), 
+            n_oth   = sum(`race_eth_Other`, na.rm = TRUE),
+            n_na    = sum(`race_eth_NA`, na.rm = TRUE)) %>%
+  mutate(n_bh = n_black + n_hisp,
+         new = 1-n_bh,
+         n_bh = sum(n_bh, na.rm = TRUE),
+         share_bh = n_bh / (n - n_na)) %>% 
+  filter(n >= 50) %>% 
+  arrange(share_bh)
+  
+  knitr::kable(arrests_stations_top)
+```
+
+### 7d) Briefly summarize any noteworthy findings from the table you just generated. {-}
+
+My code here is not correct--spent a lot of time on this and simply cannot figure this out on my own. It is impossible to make any inferences based on the combined Black/Hispanic variable as the number makes no sense. What is illustrated, however is that the stations with the most arrests disproportionately lie outside of Manhattan. This suggests that NYPD are far more likely to arrest for fare evasion in Brooklyn, or at least those arrested outside of Manhattan tend to use public defender services more so than those in Manhattan.
+
+\medspace
+
+# (OPTIONAL) Visualize the distribution of arrests by race/ethnicity at stations with more than 100 arrests.
+- Hint: see R code from class, section 8
+
+

@@ -1,0 +1,13 @@
+"0","ggplot(stations, aes(x = povrt_all_2016, y = arrperswipe, color = nblack)) +"
+"0","    geom_point() +"
+"0","    scale_color_discrete(name = ""Predominantly Black Station"","
+"0","                         labels=c(""No"", ""Yes""),"
+"0","                         guide = guide_legend(reverse=TRUE)) +"
+"0","    theme(legend.position = ""bottom"", "
+"0","          legend.background = element_rect(color = ""black"", fill = ""grey90"", size = .2, linetype = ""solid""), "
+"0","          legend.direction = ""horizontal"","
+"0","          legend.text = element_text(size = 8), "
+"0","          legend.title = element_text(size = 8) ) +"
+"0","    geom_smooth(method = 'lm', formula=y~x)"
+"2","Warning: The `size` argument of `element_rect()` is deprecated as of ggplot2 3.4.0.
+Please use the `linewidth` argument instead."

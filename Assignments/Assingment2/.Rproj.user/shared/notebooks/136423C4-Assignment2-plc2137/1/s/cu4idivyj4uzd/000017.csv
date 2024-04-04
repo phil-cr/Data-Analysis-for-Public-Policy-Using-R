@@ -1,0 +1,3 @@
+"0","summarise(cps_2022_male, avg_earn = mean(earnweek),"
+"0","                         min_earn = min(earnweek),"
+"0","                         max_earn = max(earnweek))"

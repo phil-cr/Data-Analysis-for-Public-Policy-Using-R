@@ -1,0 +1,6 @@
+"0","ggplot(stations, "
+"0","       aes(x = povrt_all_2016, y = arrperswipe)) + "
+"0","  geom_point() + "
+"0","  ggtitle('Scatterplot of arrest intensity vs. poverty rate') + "
+"0","  labs(x = 'poverty rate', y = 'arrests per 100,000 ridership') + "
+"0","  geom_smooth(method = 'lm', formula=y~x)"

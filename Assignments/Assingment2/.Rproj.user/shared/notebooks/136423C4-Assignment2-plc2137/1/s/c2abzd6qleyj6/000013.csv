@@ -1,0 +1,4 @@
+"0","cps_2022 %>% "
+"0","    arrange(desc(earnweek)) %>% "
+"0","    select(earnweek) %>% "
+"0","    head(n=1)"

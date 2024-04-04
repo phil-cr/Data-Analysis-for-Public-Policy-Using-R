@@ -1,0 +1,83 @@
+library(tidyverse)
+library(weights)
+library(lmtest)
+library(sandwich)
+library(knitr)
+load("arrests.clean.RData")
+#2b.
+st_arrests <- arrests.clean %>%
+group_by(st_id, loc2) %>%
+summarise(arrests_all = n() ) %>%
+arrange(desc(arrests_all))
+#inspect - DO NOT INCLUDE IN RMD SUBMISSION
+str(st_arrests)  #why is this so long?
+str(st_arrests, give.attr = FALSE)
+#can also consider ungrouping the st_arrests dataframe
+#2c.
+ggplot(st_arrests, aes(x= arrests_all)) + geom_histogram()
+#remember ggplot is in the tidyverse, so we can also start by passing the data into a pipe
+st_arrests %>% ggplot(aes(x= arrests_all)) + geom_histogram()
+## -----------------------------------------------------------------------------
+## 3. joining ridership and neighborhood demographics to arrest data
+##
+##  a. read in other station-level csv files (w/strings as factors) and inspect
+##      - don't include inspection code in your rmd submission
+##
+##  b. join both data frames to st_arrests & inspect results (store new df as st_joined),
+##      - inspect results of join and describe any issues
+##      - drop unnecessary columns from the ridership data
+##      - group st_joined by st_id and mta_name
+##      - inspect but don't include inspection code in your rmd submission
+##        - confirm you have 157 station-level observations
+##
+##  c. print top 10 stations by arrest counts
+##      - only display st_id, mta_name, arrests_all, shareblack, povrt_all_2016
+## -----------------------------------------------------------------------------
+#3a.
+st_poverty <- read.csv("station_povdataclean_2016.csv",
+stringsAsFactors = TRUE)
+#background on poverty data (from 2016 American Community Survey):
+#  Source: https://usa.ipums.org/usa/acs.shtml
+#  each observation represents a "subway station area", defined as follows:
+#   - all census tracts w/geometric center within .5km of a station (see map)
+#  st_id is the unique identifier for each subway station area
+#  povrt_all_2016: % of adults in subway station area living below federal poverty level
+#  shareblack: share of adults in subway station area who identify as Black
+#  nblack: dummy variable = 1 if shareblack >= 50%, 0 otherwise
+st_ridership <- read.csv("Subway Ridership by Station - BK.csv",
+stringsAsFactors = TRUE)
+#background on MTA ridership data:
+#  Source: http://web.mta.info/nyct/facts/ridership/ridership_sub_annual.htm
+#  each observation is a subway station (area) w/a unique identifier (st_id)
+#  includes annual ridership (# of MetroCard 'swipes') at each station for 2011-16
+#make sure to inspect these new df's before we join them in 3b!
+#3b.
+#a vector of columns we don't need to keep, will use in 3b
+drop_vars <- c("swipes2011", "swipes2012", "swipes2013", "swipes2014", "swipes2015")
+#example: join st_arrests to st_poverty
+st_joinedtemp <- inner_join(st_arrests, st_poverty, by = c("st_id" = "st_id"))
+st_joined %>%
+arrange(desc(arrests_all)) %>%
+select(st_id, mta_name, arrests_all, shareblack, povrt_all_2016) %>%
+head(n = 10)
+ggplot(stations, aes(x = povrt_all_2016, y = arrperswipe, color = nblack)) +
+geom_point() +
+#Modify legend title and text
+scale_color_discrete(name = "Predominantly Black Station",
+labels=c("No", "Yes"),
+#Reverse Label Order
+guide = guide_legend(reverse=TRUE)) +
+#Modify legend aesthetics (optional)
+theme(legend.position = "bottom",
+legend.background = element_rect(color = "black", fill = "grey90", size = .2, linetype = "solid"),
+legend.direction = "horizontal",
+legend.text = element_text(size = 8),
+legend.title = element_text(size = 8) )
+drop_vars <- c("swipes2011", "swipes2012", "swipes2013", "swipes2014", "swipes2015")
+#example: join st_arrests to st_poverty
+st_joinedtemp <- inner_join(st_arrests, st_poverty, by = c("st_id" = "st_id"))
+install.packages("weights")
+install.packages("lmtest")
+install.packages("sandwich")
+install.packages("knitr")
+install.packages("knitr")

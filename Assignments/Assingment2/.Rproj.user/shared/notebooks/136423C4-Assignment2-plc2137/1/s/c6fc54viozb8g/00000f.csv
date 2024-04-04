@@ -1,0 +1,4 @@
+"0","sumstats <- cps_2022 %>% "
+"0","  summarise(avg_age = mean(age),"
+"0","            min_age = min(age),"
+"0","            max_age = max(age))"

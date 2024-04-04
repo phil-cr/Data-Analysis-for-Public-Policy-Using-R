@@ -1,0 +1,54 @@
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+##### *Please submit your knitted .pdf file along with the corresponding R markdown (.rmd) via Courseworks by 11:59pm on Monday, March 4th.* {-}
+
+##### Remember to think carefully about what code you include in your knitted document. Only include code chunks that you need to generate the plots and statistics to answer the questions below. Don't include code from your working R script (that we started in class) that was only used to inspect and validate your results, and isn't necessary to answer the questions. {-}
+
+\medspace
+
+# Load libraries {-}
+
+```{r}
+library(readstata13)
+library(tidyverse)
+library(lubridate)
+library(weights)
+
+getwd()
+```
+
+\medspace
+
+
+# "Cross-sectional" analysis
+
+In this section we'll explore variation in shutoffs *across* Census tracts (one observation per Census tract, summing shutoffs over the whole time period).
+
+## Visualize and interpret the relationship between share Black and shutoffs per capita across census tracts in Detroit.
+
+MI_acs_tract_10_17 <- readRDS("Data/MI_acs_tract_10_17.rds")
+
+## Visualize and interpret the relationship between median income and shutoffs per capita across census tracts in Detroit.
+
+
+## Visualize and interpret how shutoffs per capita relate to both Black share and median income on the ***same*** plot. Does race or income appear to be more salient? 
+
+\medspace
+
+
+# Time-series analysis.
+
+In this section, we'll explore variation *between* different groups of Census tracts and over time *within* groups (with groups defined based on tract-level income and racial composition).
+
+## Plot and interpret the shutoffs per capita over time for tracts below/above citywide median housheold income (show two time series on a single plot).
+
+## Plot and interpret the shutoffs per capita over time for tracts that are at least 75% Black and those that aren't (show two time series on a single plot).
+
+\medspace
+
+# Conclusion
+
+## Based on the "cross-sectional" and time series analysis conducted above, does race or income appear to be a more important factor for explaining what type of households are most affected by the public water shutoffs? Explain.
+

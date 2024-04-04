@@ -1,0 +1,5 @@
+"0","st_poverty <- read.csv(""station_povdataclean_2016.csv"", "
+"0","                         stringsAsFactors = TRUE)"
+"0",""
+"0","st_ridership <- read.csv(""Subway Ridership by Station - BK.csv"", "
+"0","                           stringsAsFactors = TRUE)"

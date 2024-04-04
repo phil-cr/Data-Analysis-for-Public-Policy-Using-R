@@ -1,0 +1,2 @@
+"0","max_earnings <- cps_2022 %>% "
+"0","  summarise(max_earning = max(earnweek))"

@@ -1,0 +1,4 @@
+"0","st_joined %>% "
+"0","    arrange(desc(arrests_all)) %>% "
+"0","    select(st_id, mta_name, arrests_all, shareblack, povrt_all_2016) %>% "
+"0","    head(n = 10) "

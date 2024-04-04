@@ -1,0 +1,4 @@
+"0","st_arrests <- arrests.clean %>% "
+"0","   group_by(st_id, loc2) %>% "
+"0","    summarise(arrests_all = n() ) %>% "
+"0","    arrange(desc(arrests_all))"

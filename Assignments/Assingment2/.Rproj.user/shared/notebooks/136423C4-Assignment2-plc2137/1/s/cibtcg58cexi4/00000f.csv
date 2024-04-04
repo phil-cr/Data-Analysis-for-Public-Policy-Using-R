@@ -1,0 +1,5 @@
+"0","cps_2022_male_white <- cps_2022_male %>%"
+"0","  filter(race == 'White')"
+"0",""
+"0","cps_2022_female_black <- cps_2022_female %>%"
+"0","  filter(race == 'Black')"
