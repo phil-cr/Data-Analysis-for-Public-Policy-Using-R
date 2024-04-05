@@ -2,14 +2,38 @@ library(tidyverse)
 library(dplyr)
 library(tidycensus)
 
-#code to read in the csv gov contracting files
-temp13_1 <- read.csv("FY2013_All_Contracts_Full_2013_1.csv", header = TRUE,
+#code to read in the condensed csv gov contracting files
+temp13 <- read.csv("FederalContracts2013.csv", header = TRUE,
                          stringsAsFactors = FALSE, colClass ="factor")
 
-temp13_2 <- read.csv("FY2013_All_Contracts_Full_2013_2.csv", header = TRUE,
+temp14 <- read.csv("FederalContracts2014.csv", header = TRUE,
                          stringsAsFactors = FALSE, colClass ="factor")
 
-temp15 <- read.csv("FY2013_All_Contracts_Full_2013_3.csv", header = TRUE,
+temp15 <- read.csv("FederalContracts2015.csv", header = TRUE,
+                         stringsAsFactors = FALSE, colClass ="factor")
+
+temp16 <- read.csv("FederalContracts2016.csv", header = TRUE,
+                         stringsAsFactors = FALSE, colClass ="factor")
+
+temp17 <- read.csv("FederalContracts2017.csv", header = TRUE,
+                         stringsAsFactors = FALSE, colClass ="factor")
+
+temp18 <- read.csv("FederalContracts2018.csv", header = TRUE,
+                         stringsAsFactors = FALSE, colClass ="factor")
+
+temp19 <- read.csv("FederalContracts2019.csv", header = TRUE,
+                         stringsAsFactors = FALSE, colClass ="factor")
+
+temp20 <- read.csv("FederalContracts2020.csv", header = TRUE,
+                         stringsAsFactors = FALSE, colClass ="factor")
+
+temp21 <- read.csv("FederalContracts2021.csv", header = TRUE,
+                         stringsAsFactors = FALSE, colClass ="factor")
+
+temp22 <- read.csv("FederalContracts2022.csv", header = TRUE,
+                         stringsAsFactors = FALSE, colClass ="factor")
+
+temp23 <- read.csv("FederalContracts2023.csv", header = TRUE,
                          stringsAsFactors = FALSE, colClass ="factor")
 
 #code to remove the necessary columns (repeat for all three dataframes in a given year)
