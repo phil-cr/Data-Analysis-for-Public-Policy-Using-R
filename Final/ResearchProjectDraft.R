@@ -2,16 +2,6 @@ library(tidyverse)
 library(dplyr)
 library(tidycensus)
 
-#code for reading in the final singular and cleaned dataframes from each year
-temp2013 <- read.csv("FederalContracts2013.csv", header = TRUE,
-                         stringsAsFactors = FALSE, colClass ="factor")
-
-temp2014 <- read.csv("FederalContracts2014.csv", header = TRUE,
-                         stringsAsFactors = FALSE, colClass ="factor")
-
-temp2015 <- read.csv("FederalContracts2014.csv", header = TRUE,
-                         stringsAsFactors = FALSE, colClass ="factor")
-
 #code to read in the csv gov contracting files
 temp13_1 <- read.csv("FY2013_All_Contracts_Full_2013_1.csv", header = TRUE,
                          stringsAsFactors = FALSE, colClass ="factor")
@@ -40,6 +30,16 @@ temp14<- temp2014_1 %>% rbind(temp2014_2) %>%
 
 #code to download the newly binded dataframe from one single year into a .csv file on your computer
 write.csv(temp13, file = "FederalContracts2014.csv")
+
+#code for reading in the final singular and cleaned dataframes from each year
+temp2013 <- read.csv("FederalContracts2013.csv", header = TRUE,
+                         stringsAsFactors = FALSE, colClass ="factor")
+
+temp2014 <- read.csv("FederalContracts2014.csv", header = TRUE,
+                         stringsAsFactors = FALSE, colClass ="factor")
+
+temp2015 <- read.csv("FederalContracts2014.csv", header = TRUE,
+                         stringsAsFactors = FALSE, colClass ="factor")
 
 # getting rid of the dollar signs
 contract <- contracttemp %>% 
