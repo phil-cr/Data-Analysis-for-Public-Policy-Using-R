@@ -3,17 +3,29 @@ library(dplyr)
 library(tidycensus)
 
 #code to read in the csv gov contracting files
-temp13_1 <- read.csv("FY2013_All_Contracts_Full_2013_1.csv", header = TRUE,
+temp21_1 <- read.csv("Data/Hubzones/2021/FY2021_All_Contracts_Full_1.csv", header = TRUE,
                      stringsAsFactors = FALSE, colClass ="factor")
 
-temp13_2 <- read.csv("FY2013_All_Contracts_Full_2013_2.csv", header = TRUE,
+temp21_2 <- read.csv("Data/Hubzones/2021/FY2021_All_Contracts_Full_2.csv", header = TRUE,
                      stringsAsFactors = FALSE, colClass ="factor")
 
-temp15 <- read.csv("FY2013_All_Contracts_Full_2013_3.csv", header = TRUE,
-                   stringsAsFactors = FALSE, colClass ="factor")
+temp21_3 <- read.csv("Data/Hubzones/2021/FY2021_All_Contracts_Full_3.csv", header = TRUE,
+                     stringsAsFactors = FALSE, colClass ="factor")
+
+temp21_4 <- read.csv("Data/Hubzones/2021/FY2021_All_Contracts_Full_4.csv", header = TRUE,
+                     stringsAsFactors = FALSE, colClass ="factor")
+
+temp21_5 <- read.csv("Data/Hubzones/2021/FY2021_All_Contracts_Full_5.csv", header = TRUE,
+                     stringsAsFactors = FALSE, colClass ="factor")
+
+temp21_6 <- read.csv("Data/Hubzones/2021/FY2021_All_Contracts_Full_6.csv", header = TRUE,
+                     stringsAsFactors = FALSE, colClass ="factor")
+
+temp21_7 <- read.csv("Data/Hubzones/2021/FY2021_All_Contracts_Full_7.csv", header = TRUE,
+                     stringsAsFactors = FALSE, colClass ="factor")
 
 #code to remove the necessary columns (repeat for all three dataframes in a given year)
-temp2013_1 <- temp13_1 %>% select(alaskan_native_corporation_owned_firm, american_indian_owned_business, 
+temp2021_7 <- temp21_7 %>% select(alaskan_native_corporation_owned_firm, american_indian_owned_business, 
                                   indian_tribe_federally_recognized, native_hawaiian_organization_owned_firm, tribally_owned_firm, 
                                   minority_owned_business, asian_pacific_american_owned_business, action_date_fiscal_year, 
                                   subcontinent_asian_asian_indian_american_owned_business, black_american_owned_business,
@@ -25,14 +37,18 @@ temp2013_1 <- temp13_1 %>% select(alaskan_native_corporation_owned_firm, america
                                   recipient_address_line_1, recipient_address_line_2)
 
 #code to combine all three dataframes from a single year
-temp14<- temp2014_1 %>% rbind(temp2014_2) %>% 
-  rbind(temp2014_3)
+temp21<- temp2021_1 %>% rbind(temp2021_2) %>% 
+  rbind(temp2021_3) %>% 
+  rbind(temp2021_4) %>% 
+  rbind(temp2021_5) %>% 
+  rbind(temp2021_6) %>% 
+  rbind(temp2021_7)
 
 #code to download the newly binded dataframe from one single year into a .csv file on your computer
-write.csv(temp13, file = "FederalContracts2014.csv")
+write.csv(temp21, file = "FederalContracts2021.csv")
 
 #code for reading in the final singular and cleaned dataframes from each year
-temp2013 <- read.csv("FederalContracts2013.csv", header = TRUE,
+temp2023 <- read.csv("FederalContracts2023.csv", header = TRUE,
                      stringsAsFactors = FALSE, colClass ="factor")
 
   
