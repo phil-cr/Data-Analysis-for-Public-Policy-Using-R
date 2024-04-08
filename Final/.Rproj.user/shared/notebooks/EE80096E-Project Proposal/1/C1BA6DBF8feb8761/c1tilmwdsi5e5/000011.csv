@@ -1,5 +1,0 @@
-"0","contracttemp %>% "
-"0","  mutate(across(ends_with("".Dollars""), gsub(""\\$"", """", .))"
-"2","Error: Incomplete expression: contracttemp %>% 
-  mutate(across(ends_with("".Dollars""), gsub(""\\$"", """", .))
-"

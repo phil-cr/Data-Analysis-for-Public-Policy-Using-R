@@ -1,3 +1,0 @@
-"0","contract_clean <- contracttemp %>%"
-"0","  mutate(across(ends_with("".Dollars""), ~ gsub(""[\\$,]"", """", .)))"
-"0",""
