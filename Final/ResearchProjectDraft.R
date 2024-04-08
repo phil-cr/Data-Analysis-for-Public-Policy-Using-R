@@ -2,51 +2,27 @@ library(tidyverse)
 library(dplyr)
 library(tidycensus)
 
-#code to read in the condensed csv gov contracting files
-temp13 <- read.csv("FederalContracts2013.csv", header = TRUE,
-                         stringsAsFactors = FALSE, colClass ="factor")
+#code to read in the csv gov contracting files
+temp13_1 <- read.csv("FY2013_All_Contracts_Full_2013_1.csv", header = TRUE,
+                     stringsAsFactors = FALSE, colClass ="factor")
 
-temp14 <- read.csv("FederalContracts2014.csv", header = TRUE,
-                         stringsAsFactors = FALSE, colClass ="factor")
+temp13_2 <- read.csv("FY2013_All_Contracts_Full_2013_2.csv", header = TRUE,
+                     stringsAsFactors = FALSE, colClass ="factor")
 
-temp15 <- read.csv("FederalContracts2015.csv", header = TRUE,
-                         stringsAsFactors = FALSE, colClass ="factor")
-
-temp16 <- read.csv("FederalContracts2016.csv", header = TRUE,
-                         stringsAsFactors = FALSE, colClass ="factor")
-
-temp17 <- read.csv("FederalContracts2017.csv", header = TRUE,
-                         stringsAsFactors = FALSE, colClass ="factor")
-
-temp18 <- read.csv("FederalContracts2018.csv", header = TRUE,
-                         stringsAsFactors = FALSE, colClass ="factor")
-
-temp19 <- read.csv("FederalContracts2019.csv", header = TRUE,
-                         stringsAsFactors = FALSE, colClass ="factor")
-
-temp20 <- read.csv("FederalContracts2020.csv", header = TRUE,
-                         stringsAsFactors = FALSE, colClass ="factor")
-
-temp21 <- read.csv("FederalContracts2021.csv", header = TRUE,
-                         stringsAsFactors = FALSE, colClass ="factor")
-
-temp22 <- read.csv("FederalContracts2022.csv", header = TRUE,
-                         stringsAsFactors = FALSE, colClass ="factor")
-
-temp23 <- read.csv("FederalContracts2023.csv", header = TRUE,
-                         stringsAsFactors = FALSE, colClass ="factor")
+temp15 <- read.csv("FY2013_All_Contracts_Full_2013_3.csv", header = TRUE,
+                   stringsAsFactors = FALSE, colClass ="factor")
 
 #code to remove the necessary columns (repeat for all three dataframes in a given year)
 temp2013_1 <- temp13_1 %>% select(alaskan_native_corporation_owned_firm, american_indian_owned_business, 
-indian_tribe_federally_recognized, native_hawaiian_organization_owned_firm, tribally_owned_firm, 
-minority_owned_business, asian_pacific_american_owned_business, action_date_fiscal_year, 
-subcontinent_asian_asian_indian_american_owned_business, black_american_owned_business,
-hispanic_american_owned_business, native_american_owned_business,
-other_minority_owned_business, contracting_officers_determination_of_business_size_code,
-historically_underutilized_business_zone_hubzone_firm, recipient_city_name, recipient_name, 
-awarding_agency_name, federal_action_obligation, total_dollars_obligated, recipient_country_code, 
-recipient_county_name, recipient_state_code, recipient_state_name, number_of_actions, recipient_zip_4_code, 
-recipient_address_line_1, recipient_address_line_2)
+                                  indian_tribe_federally_recognized, native_hawaiian_organization_owned_firm, tribally_owned_firm, 
+                                  minority_owned_business, asian_pacific_american_owned_business, action_date_fiscal_year, 
+                                  subcontinent_asian_asian_indian_american_owned_business, black_american_owned_business,
+                                  hispanic_american_owned_business, native_american_owned_business,
+                                  other_minority_owned_business, contracting_officers_determination_of_business_size_code,
+                                  historically_underutilized_business_zone_hubzone_firm, recipient_city_name, recipient_name, 
+                                  awarding_agency_name, federal_action_obligation, total_dollars_obligated, recipient_country_code, 
+                                  recipient_county_name, recipient_state_code, recipient_state_name, number_of_actions, recipient_zip_4_code, 
+                                  recipient_address_line_1, recipient_address_line_2)
 
 #code to combine all three dataframes from a single year
 temp14<- temp2014_1 %>% rbind(temp2014_2) %>% 
@@ -57,27 +33,6 @@ write.csv(temp13, file = "FederalContracts2014.csv")
 
 #code for reading in the final singular and cleaned dataframes from each year
 temp2013 <- read.csv("FederalContracts2013.csv", header = TRUE,
-                         stringsAsFactors = FALSE, colClass ="factor")
+                     stringsAsFactors = FALSE, colClass ="factor")
 
-temp2014 <- read.csv("FederalContracts2014.csv", header = TRUE,
-                         stringsAsFactors = FALSE, colClass ="factor")
-
-temp2015 <- read.csv("FederalContracts2014.csv", header = TRUE,
-                         stringsAsFactors = FALSE, colClass ="factor")
-
-# getting rid of the dollar signs
-contract <- contracttemp %>% 
-  mutate(across(ends_with("Dollars"), ~gsub("\\$", "", .)))
-
-# getting rid of the commas
-contracts <- contract %>% 
-  mutate(across(ends_with("Dollars"), ~gsub("\\,", "", .))) %>% 
-  mutate(across(ends_with("Actions"), ~gsub("\\,", "", .))) 
-
-# treating it as a factor in order to do summary stats
-summary <- contracts %>% 
-  group_by(American.Indian.Owned.Dollars)
-  summarise(as.factor(American.Indian.Owned.Dollars))
-
-?as.numeric
-
+  
