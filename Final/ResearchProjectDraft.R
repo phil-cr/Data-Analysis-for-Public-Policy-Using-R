@@ -71,7 +71,6 @@ test
 #code to remove non-US addresses
 temp13 <- temp13 %>% filter(recipient_country_code == "USA")
 
-
 #getting census tract ids from addresses
 addresses <- temp2018 %>% 
   select(recipient_address_line_1, recipient_address_line_2,
@@ -81,3 +80,7 @@ addresses <- temp2018 %>%
   mutate(unique_id = row_number()) %>%
   select(unique_id, everything())
 
+#recoding the census tract information to dummy variables
+censustracts <- census %>% 
+  mutate(hubzone = recode(Status.as.of.January.2018, "Not Qualified" = "0", "Qualified" = "1", "Redesignated until Dec 2021" = "1")) %>% 
+  select(Full.Tract.ID, County.Name, State, hubzone)
