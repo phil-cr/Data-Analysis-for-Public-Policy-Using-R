@@ -1,0 +1,407 @@
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+```
+
+```{css, echo = FALSE}
+table, td, th {
+  border: none;
+  padding-left: 1em;
+  padding-right: 1em;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+```
+
+
+# Creating presentations with R Markdown
+
+
+## Brief overview of ioslides | Creating slides with R Markdown 
+
+- To create an **ioslides** presentation from R Markdown, specify *ioslides_presentation* in the YAML header 
+  + **beamer** and **slidy** are other presentation types
+  
+```{r, echo = TRUE, eval = FALSE}
+---
+title: "Formatted Output & R Markdown Presentations"
+output:
+  ioslides_presentation: default
+---
+```
+
+
+## Brief overview of ioslides | Creating slides with R Markdown {.build}
+
+<div>
+- Use # for a new section, ## for a new slide, and | for adding a subtitle
+</div>
+
+<div>
+- Can set slides to display smaller text {.smaller} or display the slide content incrementally {.build} as in this slide.
+</div>
+```{r, echo = TRUE}
+## Slide title {.smaller .build}
+```
+<div>
+[Here](https://garrettgman.github.io/rmarkdown/ioslides_presentation_format.html) is a short tutorial. See Chapter 4.1 in [R Markdown: The Definitive Guide]( https://bookdown.org/yihui/rmarkdown/ioslides-presentation.html) for a more comprehensive treatment.
+</div>
+
+
+# Including output in your slides
+
+
+## Loading packages {.smaller .build}
+
+<div>
+This presentation uses some familiar packages to generate and display results:
+
+- `tidyverse`
+- `fixest`
+- `lmtest`
+- `multiwayvcov`
+- `kableExtra` 
+</div>
+<div>
+Plus some packages for creating tables with formatted output:
+
+- `stargazer`
+- `modelsummary`
+
+</div>
+```{r}
+library(tidyverse)
+library(fixest)
+library(modelsummary)
+library(stargazer)
+library(kableExtra)
+library(lmtest)
+library(multiwayvcov)
+library(sandwich)
+```
+
+
+
+## Loading data objects for this presentation {.smaller}
+
+<div>
+Load in the data objects you need, saved after creating in your R script.
+</div>
+<div>
+Can load an **.rdata** file with many objects:
+```{r load rdata, echo = TRUE}
+load("formatted_output_slides.RData") #includes objects from diff lessons
+```
+</div>
+<div>
+Or you can load an **.rds** file for a single object:
+```{r load rds, echo = TRUE}
+feDF <- readRDS(file = "feDF.rds") #a single data frame from the Medicaid lesson
+```
+</div>
+
+
+## Difference-in-means tables 
+
+Suppose we're interested in comparing the *poverty rate* and *vfund_per_poor* of regencies between Java and Sulawesi islands.
+
+[Here](https://sebastiansauer.github.io/multiple-t-tests-with-dplyr/) is a tutorial for making this kind of table using `tidyverse` functions. 
+
+```{r preprocessing 1}
+vf_province <- vf_joined %>%
+  mutate(island = if_else(str_starts(province, 'Jawa') | 
+                            province == 'Banten' | 
+                            province == 'Di Yogyakarta', 
+                          'Java', 
+                          if_else(str_starts(province, 'Sulawesi') | 
+                                    province == 'Gorontalo',
+                                  'Sulawesi', 'Other'))) %>%
+  filter(island != 'Other') %>%
+  mutate(vfund_per_poor = vfund_per_poor/1000) %>% 
+  select('poverty', 'vfund_per_poor', 'island')
+```
+
+```{r preprocessing 2}
+vf_diff <- vf_province %>%
+  
+  pivot_longer(!island, names_to = "variable", values_to = "value") %>%
+    group_by(island, variable) %>%
+    summarise(value = list(value)) %>%
+  
+  pivot_wider(names_from = "island", values_from = "value") %>%
+  
+  group_by(variable) %>%
+  mutate(mean_java = round(mean(unlist(Java)), 2),
+         mean_sulawesi = round(mean(unlist(Sulawesi)), 2),
+         diff = round(mean_java - mean_sulawesi,2),
+         p_value = t.test(unlist(Java), unlist(Sulawesi), var.equal = FALSE)$p.value) %>%
+  mutate(p_value = sprintf("%.3f", round(p_value, 3))) %>%
+  
+  select(-Java, -Sulawesi)
+
+vf_diff$variable <- c("Population in poverty (1000s)", "VF allocation/poor resident ($1000s)")
+```
+
+```{r output}
+kable(vf_diff, 
+      align = "l",
+      col.names = c("Variable", 
+                    "Java", 
+                    "Sulawesi", 
+                    "Difference", 
+                    "p-value")) %>% 
+      kable_paper("hover", 
+                  full_width = F, 
+                  html_font = "Helvetica") %>% 
+      kable_styling(font_size = 20)
+```
+
+
+
+## Difference-in-means tables {.smaller .build}
+
+<div>
+Here is another example using the `datasummary_balance()` [function](https://modelsummary.com/man/datasummary_balance.html) in the `modelsummary` [package](https://vincentarelbundock.github.io/modelsummary/index.html).
+
+```{r datasummary}
+#only look at year of Medicaid implementation for this example
+feDFty <- feDF %>% 
+  filter(year == year_mcaid) %>% 
+  mutate(treat = as.factor(ifelse(high_eligibility == 1, 
+                                  "High-Eligibility", 
+                                  "Low-Eligibility")) ) %>% #get labelled treat var
+  rename(weights = child_pop) %>%  
+    #datasummary function only recognizes weights if under column by that name
+  select(treat, afdc_rate, income_pc, hospitals_pc, beds_pc, weights) 
+
+#show diff between treatment groups (high/low elig.) in AFDC rate & controls
+datasummary_balance(~treat,
+                    data = feDFty,
+                    fmt = 2,
+                    dinm_statistic = "p.value",
+                    title = "Difference-in-means during year of Medicaid implementation by state eligilibity",
+                    notes = "Note: States are weighted by child population.")
+```
+</div>
+<div>
+**Upside to this function:**
+
+- Can show formatted output without much work
+
+**Downside:**
+
+- Isn't very flexible compared to previous approach
+</div>
+
+
+## Using Stargazer for formatted output {.smaller}
+
+`stargazer` is an R package that creates LATEX code, HTML code and ASCII text for well-formatted regression tables, with multiple models side-by-side, as well as for summary statistics tables, data frames, vectors and matrices."
+
+[Here](https://www.jakeruss.com/cheatsheets/stargazer) is a good tutorial with numerous stargazer examples and formatting options.
+
+
+
+## Regression results {.smaller .build}
+
+<div>
+Make we sure we know your PRF before reporting regression results!
+</div>
+
+<div>
+We should also know how you estimate SEs, weight observations, and any other critical details.
+</div>
+
+<div>
+For our Medicaid example, here is the PRF for our base difference-in-difference model with state and year fixed effects, 
+
+$$Y_{st} = \beta D_{st} + X_{st}' \gamma + \mu_s + \tau_t + \varepsilon_{st}$$
+
+where $Y_{st}$ is the outcome of interest in state $s$ and year $t$; $D_{st}$ is a binary variable indicating treatment status for a state-year; $X_{st}$ is a vector of time-varying controls (income, hospitals, and hospital beds per capita); $\mu_s$ represents state fixed effects; $\tau_{t}$ represents year fixed effects; and $\varepsilon_{st}$ is an idiosyncratic error term.
+</div>
+
+
+## Regression tables {.smaller}
+
+Regression tables using `modelsummary()` with minimal customization:
+
+```{r regression table 1}
+#load medicaid panel data for FE estimation
+feDF <- readRDS(file = "feDF.rds")
+
+#store models for display using modelsummary()
+models <- list(
+  "FE 1" = feols(public_insurance_child ~ D 
+              | stfips,
+              data = feDF, weight = feDF$child_pop),
+  "FE 2" = feols(public_insurance_child ~ D + hospitals_pc + beds_pc + income_pc
+              | stfips,
+              data = feDF, weight = feDF$child_pop),
+  "FE 3" = feols(public_insurance_child ~ D + hospitals_pc + beds_pc + income_pc
+              | stfips + region^year,
+              data = feDF, weight = feDF$child_pop),
+  "FE 4" = feols(public_insurance_child ~ D + hospitals_pc + beds_pc + income_pc
+              | stfips + year_mcaid^year,
+              data = feDF, weight = feDF$child_pop),
+  "FE 5" = feols(public_insurance_child ~ D + hospitals_pc + beds_pc + income_pc
+    | stfips + region^year + year_mcaid^year,
+    data = feDF, weight = feDF$child_pop))
+
+#display results results without much customization
+modelsummary(models,
+             coef_omit = "Intercept",
+             gof_omit = 'DF|Deviance|R2 Pseudo|AIC|BIC|Log.Lik.',
+             stars = c('*' = .1, '**' = .05, '***' = .01))
+```
+
+
+## Regression tables {.smaller}
+
+Regression tables using `modelsummary()` with additional customization:
+
+```{r regression table 2}
+#load medicaid panel data for FE estimation
+feDF <- readRDS(file = "feDF.rds")
+
+#store models for display using modelsummary()
+models <- list(
+  "FE 1" = feols(public_insurance_child ~ D 
+              | stfips,
+              data = feDF, weight = feDF$child_pop),
+  "FE 2" = feols(public_insurance_child ~ D + hospitals_pc + beds_pc + income_pc
+              | stfips,
+              data = feDF, weight = feDF$child_pop),
+  "FE 3" = feols(public_insurance_child ~ D + hospitals_pc + beds_pc + income_pc
+              | stfips + region^year,
+              data = feDF, weight = feDF$child_pop),
+  "FE 4" = feols(public_insurance_child ~ D + hospitals_pc + beds_pc + income_pc
+              | stfips + year_mcaid^year,
+              data = feDF, weight = feDF$child_pop),
+  "FE 5" = feols(public_insurance_child ~ D + hospitals_pc + beds_pc + income_pc
+    | stfips + region^year + year_mcaid^year,
+    data = feDF, weight = feDF$child_pop))
+
+#set up an object to customize your regression table goodness-of-fit statistics
+gm <- tibble::tribble(
+    ~raw,        ~clean,          ~fmt,
+    "nobs",               "N",                  0,
+    "r.squared",          "R<sup>2</sup>",      3,
+    "adj.r.squared",      "Adj. R<sup>2</sup>", 3,
+    "FE: stfips",         "State FEs",          0,
+    "FE: region^year",    "Region-Year FEs",    0,
+    "FE: year_mcaid^year","Medicaid timing-by-Year FEs", 0,
+    )
+
+#display results with added formatting options    
+modelsummary(models,
+             coef_omit = 'Intercept',
+             coef_rename = c("D" = "High-eligibility", 
+                             "hospitals_pc" = "Hospitals per capita",
+                             "beds_pc" = "Hospital beds per capita",
+                             "income_pc" = "Income per capita"),
+             gof_map = gm,
+             title = 'Effect of high Medicaid eligibility on public insurance use',
+             stars = c('*' = .1, '**' = .05, '***' = .01),
+             notes = 'Robust standard errors clustered by state are shown in parentheses.
+                      Observations are weighted by the child population in each state.')
+```
+
+See this [resource](https://vincentarelbundock.github.io/modelsummary/articles/modelsummary.html) for more details on `modelsummary().`
+
+
+
+## Regression tables {.smaller}
+
+Here is another example from the Detroit water shutoff analysis that relies on `lm()` for FE estimation and `stargazer` for formatting results. The full PRF is:
+
+$$total\_obs\_1000_{zt} = \beta_0 + \beta_1 si\_1000_{zt} + \beta_2 vac\_res\_p100_{zt} + \phi_z + \theta_t + u_{zt}$$
+
+Columns 1 and 2 show results without controlling for vacancy rates, columns 3 and 4 include vacancy rate as a control variable.
+
+```{r stargazer, results = 'asis'}
+se_robust <- function(x) 
+  coeftest(x, vcov = vcovHC(x, type = "HC1"))[,2]
+
+se_cluster <- function(x)
+  coeftest(x, cluster.vcov(x, cbind(zip_panel$zip5),
+                                 df_correction = T))[,2]
+
+panel_total_1a <- lm(total_obs_1000 ~ si_1000 + as.factor(zip5) + as.factor(ym), 
+                        data = zip_panel, 
+                        weight = pop2015)
+panel_total_1b <- panel_total_1a
+
+panel_total_2a <- lm(total_obs_1000 ~ si_1000 + vac_res_p100 + as.factor(zip5) + as.factor(ym),
+                      data = zip_panel, 
+                      weight = pop2015)
+panel_total_2b <- panel_total_2a
+
+mdls <- list(panel_total_1a, panel_total_1b, panel_total_2a, panel_total_2b)
+
+se <- list(se_robust(panel_total_1a), se_cluster(panel_total_1b),
+           se_robust(panel_total_2a), se_cluster(panel_total_2b))
+
+mean_y <- round(mean(zip_panel$total_obs_1000), 2)
+
+stargazer(mdls, align = TRUE, type = "html",
+          omit=c("zip5", "ym"), #omit coefficients for FE terms
+          se = se, #specify SEs to display based on the list we created
+          keep.stat = c("n", "adj.rsq"),
+          add.lines = list(c("Zip code FE", rep("Yes", 4)),
+                           c("Month FE", rep("Yes", 4)),
+                           c("Clustered SEs", "No", "Zipcode", "No", "Zipcode"),
+                           c("Mean dep var", rep(mean_y, 4))),
+          notes = "Robust standard errors are shown in parentheses unless otherwise indicated.",
+          notes.align = "l")
+```
+
+
+# Additional ioslides formatting
+
+
+## Creating bullet points lists {.build}
+
+<div>
+- This is a bullet point
+</div>
+<div>
+- This is another bullet point
+  + With a sub bullet
+</div>
+
+
+## Add a plot {.smaller}
+
+```{r ggplot}
+ggplot(data = ym_race, 
+       aes(x = date, y = si_1000, group = black75)) + 
+  geom_line(aes(color = black75)) +
+  labs(x = "", y = "Shutoff rate per 1,000 residents",
+       color = 'Census tract racial composition') + 
+  ggtitle("Insert your title here", subtitle = "and subtitle... if you want.")
+```
+
+Make sure to clearly label your axes and legend! 
+
+Note that when you're working with panel data, descriptive time series plots <br>
+by group can help motivate your analysis.
+
+
+## Tips for your presentation {.build}
+
+<div>
+- Remember to do all of your work in R script(s) and only load the objects you need into your .rmd file (use .RData and .rds files)
+</div>
+
+<div>
+- Don't describe your code and nonessential data management details, describe your analysis and results. 
+</div>
+
+<div>
+- Having extra appendix slides on hand is fine, but don't try to cover too much! Stick to the essential parts of your story.
+</div>
+
+<div>
+- Don't forget to spellcheck and review your knitted document!
+</div> 
