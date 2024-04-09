@@ -51,4 +51,15 @@ write.csv(temp21, file = "FederalContracts2021.csv")
 temp2023 <- read.csv("FederalContracts2023.csv", header = TRUE,
                      stringsAsFactors = FALSE, colClass ="factor")
 
+# code to combine all 10 cleaned years
+temp21<- temp2023 %>% rbind(temp2022) %>% 
+  rbind(temp2021) %>% 
+  rbind(temp2020) %>% 
+  rbind(temp2019) %>% 
+  rbind(temp2018) %>% 
+  rbind(temp2017) %>% 
+  rbind(temp2016) %>% 
+  rbind(temp2015) %>% 
+  rbind(temp2014) %>% 
+  rbind(temp2013) 
   
