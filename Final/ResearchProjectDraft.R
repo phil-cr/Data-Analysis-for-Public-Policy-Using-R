@@ -75,5 +75,5 @@ addresses <- temp2018 %>%
   mutate(unique_id = row_number()) %>%
   select(unique_id, everything())
 
-
-                    
+#code to remove non-US addresses
+temp13 <- temp13 %>% filter(recipient_country_code == "USA")
