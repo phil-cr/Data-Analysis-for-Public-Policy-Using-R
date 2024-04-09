@@ -84,3 +84,25 @@ addresses <- temp2018 %>%
 censustracts <- census %>% 
   mutate(hubzone = recode(Status.as.of.January.2018, "Not Qualified" = "0", "Qualified" = "1", "Redesignated until Dec 2021" = "1")) %>% 
   select(Full.Tract.ID, County.Name, State, hubzone)
+
+#recoding the ethnicity variables to dummy variables
+
+contracts <- allyears %>% 
+  mutate(alaskan_native_firm = recode(alaskan_native_corporation_owned_firm, "f" = "0", "t" = "1")) %>% 
+  mutate(american_indian_firm = recode(american_indian_owned_business, "f" = "0", "t" = "1")) %>%
+  mutate(indian_tribe_firm = recode(indian_tribe_federally_recognized, "f" = "0", "t" = "1")) %>%
+  mutate(native_hawaiian_firm = recode(native_hawaiian_organization_owned_firm, "f" = "0", "t" = "1")) %>%
+  mutate(tribal_firm = recode(tribally_owned_firm, "f" = "0", "t" = "1")) %>%
+  mutate(minority_firm = recode(minority_owned_business, "f" = "0", "t" = "1")) %>%
+  mutate(asian_pacific_firm = recode(asian_pacific_american_owned_business, "f" = "0", "t" = "1")) %>%
+  mutate(indian_tribe_firm = recode(indian_tribe_federally_recognized, "f" = "0", "t" = "1")) %>%
+  mutate(subcontinentasian_asian_indianamerican_tribe_firm = recode(subcontinent_asian_asian_indian_american_owned_business, "f" = "0", "t" = "1")) %>%
+  mutate(black_firm = recode(black_american_owned_business, "f" = "0", "t" = "1")) %>%
+  mutate(hispanic_american_firm = recode(hispanic_american_owned_business, "f" = "0", "t" = "1")) %>%
+  mutate(native_american_firm = recode(native_american_owned_business, "f" = "0", "t" = "1")) %>%
+  mutate(other_minorityy_firm = recode(other_minority_owned_business, "f" = "0", "t" = "1"))
+  
+
+  
+  
+
