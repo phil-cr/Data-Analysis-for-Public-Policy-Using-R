@@ -64,13 +64,16 @@ temp21<- temp2023 %>% rbind(temp2022) %>%
   rbind(temp2013) 
   
 # removing all non-US addresses
-temp2017 %>% filter(recipient_country_code, method = c("USA"))
+temp2018 %>% filter(recipient_country_code, method = c("USA"))
 
 #getting census tract ids from addresses
-addresses <- %>% contracts %>% select(recipient_address_line_1, recipient_address_line_2,
-                                      recipient_city_name, 
-                                      recipient_state_code, recipient_state_name, 
-                                      recipient_zip_4_code)
+addresses <- temp2018 %>% 
+  select(recipient_address_line_1, recipient_address_line_2,
+         recipient_city_name, 
+         recipient_state_code, recipient_state_name, 
+         recipient_zip_4_code) %>%
+  mutate(unique_id = row_number()) %>%
+  select(unique_id, everything())
 
 
                     
