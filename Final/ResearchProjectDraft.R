@@ -62,5 +62,22 @@ temp21<- temp2023 %>% rbind(temp2022) %>%
   rbind(temp2015) %>% 
   rbind(temp2014) %>% 
   rbind(temp2013) 
-  
+
+
 test
+
+#save the one combined document
+
+#code to remove non-US addresses
+temp13 <- temp13 %>% filter(recipient_country_code == "USA")
+
+
+#getting census tract ids from addresses
+addresses <- temp2018 %>% 
+  select(recipient_address_line_1, recipient_address_line_2,
+         recipient_city_name, 
+         recipient_state_code, recipient_state_name, 
+         recipient_zip_4_code) %>%
+  mutate(unique_id = row_number()) %>%
+  select(unique_id, everything())
+
