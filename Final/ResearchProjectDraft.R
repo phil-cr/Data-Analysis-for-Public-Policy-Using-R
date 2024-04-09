@@ -63,3 +63,7 @@ temp21<- temp2023 %>% rbind(temp2022) %>%
   rbind(temp2014) %>% 
   rbind(temp2013) 
   
+# removing all non-US addresses
+temp2017 %>% filter(recipient_country_code, method = c("USA"))
+
+                    
