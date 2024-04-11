@@ -85,9 +85,23 @@ censustracts <- census %>%
   mutate(hubzone = recode(Status.as.of.January.2018, "Not Qualified" = "0", "Qualified" = "1", "Redesignated until Dec 2021" = "1")) %>% 
   select(Full.Tract.ID, County.Name, State, hubzone)
 
+#Drop X.1 and recipient_name
+
+contracts <- contracts %>% 
+  select(X, alaskan_native_corporation_owned_firm, american_indian_owned_business, 
+       indian_tribe_federally_recognized, native_hawaiian_organization_owned_firm, tribally_owned_firm, 
+       minority_owned_business, asian_pacific_american_owned_business, action_date_fiscal_year, 
+       subcontinent_asian_asian_indian_american_owned_business, black_american_owned_business,
+       hispanic_american_owned_business, native_american_owned_business,
+       other_minority_owned_business, contracting_officers_determination_of_business_size_code,
+       historically_underutilized_business_zone_hubzone_firm, recipient_city_name, 
+       awarding_agency_name, federal_action_obligation, total_dollars_obligated, recipient_country_code, 
+       recipient_county_name, recipient_state_code, recipient_state_name, number_of_actions, recipient_zip_4_code, 
+       recipient_address_line_1, recipient_address_line_2)
+
 #recoding the ethnicity variables to dummy variables
 
-contracts <- allyears %>% 
+contracts <- contracts %>% 
   mutate(alaskan_native_firm = recode(alaskan_native_corporation_owned_firm, "f" = "0", "t" = "1")) %>% 
   mutate(american_indian_firm = recode(american_indian_owned_business, "f" = "0", "t" = "1")) %>%
   mutate(indian_tribe_firm = recode(indian_tribe_federally_recognized, "f" = "0", "t" = "1")) %>%
@@ -101,3 +115,31 @@ contracts <- allyears %>%
   mutate(hispanic_american_firm = recode(hispanic_american_owned_business, "f" = "0", "t" = "1")) %>%
   mutate(native_american_firm = recode(native_american_owned_business, "f" = "0", "t" = "1")) %>%
   mutate(other_minorityy_firm = recode(other_minority_owned_business, "f" = "0", "t" = "1"))
+
+#drop old T/F coded variables
+
+contracts = subset(contracts, select = -c(alaskan_native_corporation_owned_firm,
+                                          american_indian_owned_business,
+                                          indian_tribe_federally_recognized,
+                                          native_hawaiian_organization_owned_firm,
+                                          tribally_owned_firm,
+                                          minority_owned_business,
+                                          asian_pacific_american_owned_business,
+                                          indian_tribe_federally_recognized,
+                                          subcontinent_asian_asian_indian_american_owned_business,
+                                          black_american_owned_business,
+                                          hispanic_american_owned_business,
+                                          native_american_owned_business,
+                                          other_minority_owned_business))
+
+#Write clean csv
+write.csv(contracts, file = "AllFederalContracts_clean.csv")
+
+#New address df
+addresses <- contracts %>% 
+  select(X, recipient_address_line_1, recipient_city_name, recipient_state_code,
+         recipient_zip_4_code)
+
+write.csv(addresses, file = "Addresses.csv")
+
+
