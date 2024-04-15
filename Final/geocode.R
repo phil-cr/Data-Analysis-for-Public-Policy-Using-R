@@ -329,7 +329,8 @@ census50 <- read.csv("Code/Censuslast25.csv", header = TRUE,
 census50 = subset(census50, select = -c(X))
 
 
-hubzones <- read.csv("Code/Censustractdesignations.csv")
+hubzones <- read.csv("Code/CensusDesignations_Cleaned.csv", header = TRUE,
+                     stringsAsFactors = FALSE, colClass = "factor")
 
 
 census50 <- census50 %>% unite(Full.Tract.ID, state_fips:census_tract, sep = '', remove = TRUE) 
@@ -337,6 +338,11 @@ census50 <- census50 %>% unite(Full.Tract.ID, state_fips:census_tract, sep = '',
 census_all <- first25 %>% rbind(census50)
 
 write.csv(census_all, file = "CensusAll.csv")
+
+census_all <- read.csv("Code/CensusAll.csv", header = TRUE,
+                       stringsAsFactors = FALSE)
+
+census_all = subset(census_all, select = -c(X))
 
 # code to filter by state
 
@@ -347,3 +353,10 @@ CA <- tempall %>% filter(recipient_state_code == "CA")
 tempall =  subset(tempall, select = -c(X))
 
 # code to join to dataframes
+
+census_hubzone <- merge(census_all, hubzones, by = "Full.Tract.ID")
+
+# write the new .csv
+
+write.csv(census_hubzone, file = "Census_Hubzone_Master.csv")
+
