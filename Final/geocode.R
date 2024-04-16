@@ -360,3 +360,17 @@ census_hubzone <- merge(census_all, hubzones, by = "Full.Tract.ID")
 
 write.csv(census_hubzone, file = "Census_Hubzone_Master.csv")
 
+ 
+
+
+federalcontracts <- left_join(contracts, census, by = c("recipient_city_name", 
+                                                        "recipient_state_code", 
+                                                        "recipient_zip_4_code", 
+                                                        "recipient_address_line_1"))
+census = subset(census, select = -c(unique_id, X.2))
+contracts = subset(contracts, select = -c(X, X.1))
+
+federalcontracts <- merge(contracts, census, by )
+
+federalcontracts <- match(contracts, census)
+
