@@ -3,10 +3,15 @@ library(dplyr)
 library(tidycensus)
 library(tidyselect)
 library(tidygeocoder)
+library(lmtest)
+library(fixest)
+library(sandwich)
 
 install.packages('tidyselect')
-
+install.packages("lmtest")
 install.packages('tidygeocoder')
+install.packages("fixest")
+install.packages("sandwich")
 
 
 #code to read in the csv gov contracting files
@@ -361,16 +366,38 @@ census_hubzone <- merge(census_all, hubzones, by = "Full.Tract.ID")
 write.csv(census_hubzone, file = "Census_Hubzone_Master.csv")
 
  
+census <- read.csv("Code/Census_Hubzone_Master.csv")
+contracts <- read.csv("Code/General_Services_Administration_Federal_Contracts.csv")
 
-
-federalcontracts <- left_join(contracts, census, by = c("recipient_city_name", 
+#federalcontracts <- left_join(contracts, census, by = c("recipient_city_name", 
                                                         "recipient_state_code", 
                                                         "recipient_zip_4_code", 
                                                         "recipient_address_line_1"))
-census = subset(census, select = -c(unique_id, X.2))
+
+census = subset(census, select = -c(unique_id,X, X.1, X.2,id, census_block, 
+                                    tiger_side, tiger_line_id, recipient_zip_4_code))
+
 contracts = subset(contracts, select = -c(X, X.1))
 
-federalcontracts <- merge(contracts, census, by )
+census_distinct <- census %>% distinct()
+#contracts_distinct <- contracts %>% distinct()
+
+federalcontracts <- merge(contracts, census_distinct, by.x = "recipiant_address_line_1", by.y = "recipiant_address_line_1")
 
 federalcontracts <- match(contracts, census)
 
+allcontracts <- inner_join(census_distinct, contracts, by = c("recipient_address_line_1"), relationship = "many-to-many")
+
+allcontracts = subset(allcontracts, select = -c(recipient_address_line_2, 
+                                                input_address, match_type, 
+                                                match_indicator, matched_address))
+
+write.csv(allcontracts, file = "All_Contracts_Final.csv")
+
+ols1l <- lm(federal_action_obligation ~ hubzone + black_firm + hubzone*black_firm, data = allcontracts)
+ols3l <- lm(federal_action_obligation ~ historically = black_firm + hubzone*black_firm, data = allcontracts)
+ols2l <- lm(number_of_actions ~ hubzone + black_firm + hubzone*black_firm, data = allcontracts)
+summary(ols1l)
+summary(ols2l)
+
+coeftest(ols1l, vcov = vcovHC(ols1l, type = "HC1"))
