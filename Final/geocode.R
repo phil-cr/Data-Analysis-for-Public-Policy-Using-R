@@ -401,3 +401,8 @@ summary(ols1l)
 summary(ols2l)
 
 coeftest(ols1l, vcov = vcovHC(ols1l, type = "HC1"))
+
+allcontracts <- read.csv("Data/All_Contracts_Final.csv")
+decennial <- read.csv("Data/DECENNIALDP2020.DP1-Data.csv")
+
+decennial$GEO_ID <- substr(decennial$GEO_ID, 10, nchar(decennial$GEO_ID))
