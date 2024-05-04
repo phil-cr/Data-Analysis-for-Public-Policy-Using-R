@@ -87,6 +87,66 @@ reg1 = lm(total_dollars_obligated ~ hubzone +
 
 summary(reg1)
 
+#new from Lena
+
+reg1 = lm(total_dollars_obligated ~ hubzone +
+           small_business +
+           alaskan_native_firm +
+           american_indian_firm +
+           indian_tribe_firm +
+           other_minority_firm +
+           median_age +
+           median_household_income +
+           median_earnings +
+           native_hawaiian_firm +
+           tribal_firm +
+           asian_pacific_firm +
+           subcontinentasian_asian_indianamerican_tribe_firm +
+           black_firm +
+           hispanic_american_firm +
+           native_american_firm +
+           self_employed_status +
+           hispanic_latino_pop +
+           multiracial_pop +
+           asian_pop +
+           native_hawaiian_pacific_islander_pop +
+           american_indian_alaskan_native +
+           black_pop +
+           white_pop +
+           median_age,
+         data = federalcontracts, weight = total_pop)
+
+reg2 = lm(federal_action_obligation ~ hubzone +
+            small_business +
+            alaskan_native_firm +
+            american_indian_firm +
+            indian_tribe_firm +
+            other_minority_firm +
+            median_age +
+            median_household_income +
+            median_earnings +
+            native_hawaiian_firm +
+            tribal_firm +
+            asian_pacific_firm +
+            subcontinentasian_asian_indianamerican_tribe_firm +
+            black_firm +
+            hispanic_american_firm +
+            native_american_firm +
+            self_employed_status +
+            hispanic_latino_pop +
+            multiracial_pop +
+            asian_pop +
+            native_hawaiian_pacific_islander_pop +
+            american_indian_alaskan_native +
+            black_pop +
+            white_pop +
+            median_age,
+          data = federalcontracts, weight = total_pop)
+
+reg_fe1 <- feols(total_dollars_obligated ~ hubzone + hubzone*black_firm, 
+                 data = federalcontracts,
+                 weight = federalcontracts$total_pop)
+
 #specify model with FEs for country and wave, w/ robust SEs
 reg_fe1 <- feols(total_dollars_obligated ~ hubzone + hubzone*black_firm, 
                  data = federalcontracts,
@@ -96,4 +156,4 @@ summary(reg_fe1)
 
 stargazer(reg_fe1, type = "html")
 
-stargazer(reg_fe1)
+stargazer(federalcontracts, reg_fe1)
